@@ -127,4 +127,14 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Конфигурация сервера электронной почты
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'floria.mahail@gmail.com'
+EMAIL_HOST_PASSWORD = 'eajjsfxosblrtysb'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
 AUTH_USER_MODEL = 'main.User'

@@ -1,7 +1,11 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, User
 
 import uuid
+
+from django.db.models import signals
+from django.core.mail import send_mail
+from django.urls import reverse
 
 
 class UserAccountManager(BaseUserManager):
@@ -38,7 +42,7 @@ class User(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
 
     is_verified = models.BooleanField('verified', default=False) # new
-    verification_uuid = models.UUIDField('Unique Verification UUID', default=uuid.uuid4)# new
+    verification_uuid = models.UUIDField('Unique Verification UUID', default=uuid.uuid4)
 
     objects = UserAccountManager()
     USERNAME_FIELD = 'email'
@@ -60,3 +64,16 @@ class User(AbstractBaseUser):
         "Явнается ли пользователь сотрудником?"
         # Самый простой ответ: Все администраторы - это сотрудники
         return self.is_admin
+
+    def user_post_save(sender, instance, signal, *args, **kwargs):
+        if not instance.is_verified:
+            send_mail(
+                'Verify your  account',
+                'Follow this link to verify your account: '
+                'http://localhost:8000%s' % reverse('verify', kwargs={'uuid': str(instance.verification_uuid)}),
+                'admin@localhost.ru',
+                [instance.email],
+                fail_silently=False,
+            )
+
+    signals.post_save.connect(user_post_save, sender=User)
