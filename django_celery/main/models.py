@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
+import uuid
+
 
 class UserAccountManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -34,6 +36,10 @@ class User(AbstractBaseUser):
     last_name = models.CharField(verbose_name='last name', max_length=30, blank=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+
+    is_verified = models.BooleanField('verified', default=False) # new
+    verification_uuid = models.UUIDField('Unique Verification UUID', default=uuid.uuid4)# new
+
     objects = UserAccountManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
@@ -42,15 +48,15 @@ class User(AbstractBaseUser):
         return self.email
 
     def has_perm(self, perm, obj=None):
-        """Есть ли у пользователей конкретное разрешение?"""
+        "Есть ли у пользователей конкретное разрешение?"
         return True
 
     def has_module_perms(self, app_label):
-        """Есть ли у пользователя разрешения на просмотр приложения `app_label`?"""
+        "Есть ли у пользователя разрешения на просмотр приложения `app_label`?"
         return True
 
     @property
     def is_staff(self):
-        """Является ли пользователь сотрудником?"""
+        "Явнается ли пользователь сотрудником?"
         # Самый простой ответ: Все администраторы - это сотрудники
         return self.is_admin
