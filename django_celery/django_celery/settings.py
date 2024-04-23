@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     # Приложения
     'main.apps.MainConfig',
+    'publish.apps.PublishConfig',
 ]
 
 MIDDLEWARE = [
